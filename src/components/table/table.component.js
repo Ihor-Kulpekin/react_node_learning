@@ -1,8 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import styled from "styled-components";
 import TableItemComponent from "./table-item/table-item.component";
 import {useDispatch, useSelector} from "react-redux";
-import {decrement, increment} from "../../slices/counter.slice";
 import {getBmls} from "../../slices/bmls.silce";
 
 const TableComponentStyled = styled.table`
@@ -31,14 +30,22 @@ const TableComponentStyled = styled.table`
 `
 
 const TableComponent = () => {
-  const {bmls} = useSelector((state) => state.bmls);
+  const {bmls, page} = useSelector((state) => state.bmls);
   const dispatch = useDispatch();
 
+  const rows = useMemo(() => {
+    return 10;
+  }, [])
+
   const fetchBmls = () => {
-    dispatch(getBmls())
+    dispatch(getBmls({
+      limit: rows,
+      page,
+      skip: rows * (page - 1)
+    }))
   }
 
-  useEffect(fetchBmls, [])
+  useEffect(fetchBmls, [page])
 
   return (
     <TableComponentStyled>
@@ -53,12 +60,11 @@ const TableComponent = () => {
           <th>Room Type</th>
           <th>Brand Price</th>
           <th>Ota Price</th>
-          <th>Genius</th>
         </tr>
       {
         bmls && bmls.length ? (
           bmls.map((bml) => (
-            <TableItemComponent bml={bml}/>
+            <TableItemComponent key={bml._id} bml={bml}/>
           ))
         ) : null
       }

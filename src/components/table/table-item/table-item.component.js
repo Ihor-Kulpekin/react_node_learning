@@ -23,7 +23,6 @@ const TableItemComponent = ({bml}) => {
       <td>{bml.hotel_bid.room_type ? bml.hotel_bid.room_type : ''}</td>
       <td>{bml.hotel_bid.price_for_comparison ? (bml.hotel_bid.price_for_comparison).toFixed(2) + bml.currencyId : ''}</td>
       <td>{bml.competitor_bid.price_for_comparison ? (bml.competitor_bid.price_for_comparison).toFixed(2) + bml.currencyId : ''}</td>
-      <td></td>
     </TrWrapper>
   );
 };
