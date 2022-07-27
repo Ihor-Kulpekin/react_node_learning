@@ -16,10 +16,10 @@ const InputComponentWrapper = styled.div`
   }
 `
 
-const InputComponent = ({text = 'Search...', onBlur, onFocus}) => {
+const InputComponent = ({text = 'Search...', onBlur, onFocus, value, onChange}) => {
   return (
     <InputComponentWrapper>
-      <input type="text" className="input" placeholder={text} onBlur={onBlur} onFocus={onFocus}/>
+      <input type="text" className="input" value={value} onChange={onChange} placeholder={text} onBlur={onBlur} onFocus={onFocus}/>
     </InputComponentWrapper>
   );
 };
