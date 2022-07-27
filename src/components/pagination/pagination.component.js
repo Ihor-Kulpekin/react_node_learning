@@ -5,6 +5,8 @@ import {DOTS, usePagination} from "../../hooks/usePagination";
 const PaginationComponentWrapper = styled.ul`
   display: flex;
   list-style-type: none;
+  max-width: 1280px;
+  overflow-x: scroll;
 
   .pagination-item {
     margin-right: 10px;
