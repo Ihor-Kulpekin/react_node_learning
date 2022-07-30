@@ -3,6 +3,7 @@ import styled from "styled-components";
 import TableItemComponent from "./table-item/table-item.component";
 import {useDispatch, useSelector} from "react-redux";
 import {getBmls} from "../../slices/bmls.silce";
+import axios from "axios";
 
 const TableComponentStyled = styled.table`
   font-family: Arial, Helvetica, sans-serif;
@@ -29,6 +30,23 @@ const TableComponentStyled = styled.table`
   tr:hover {background-color: #ddd;}
 `
 
+const MenuButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 1170px;
+  margin-bottom: 20px;
+
+  .download_button {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+
+    :hover {
+      color: rgba(0, 0, 0, 0.51);
+    }
+  }
+`
+
 const TableComponent = () => {
   const {bmls, page} = useSelector((state) => state.bmls);
   const dispatch = useDispatch();
@@ -43,12 +61,35 @@ const TableComponent = () => {
       page,
       skip: rows * (page - 1)
     }))
+  };
+
+  const download = async () => {
+    const response = await axios.post('http://localhost:3002/api/v1/bmls/download', {}, {
+      headers: {
+        Accept: 'application/zip',
+      }
+    });
+
+    const url = window.URL.createObjectURL(new Blob([new Uint8Array(response.data.content.data)], { type: 'application/zip' }));
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', response.data.file);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   useEffect(fetchBmls, [page])
 
   return (
-    <TableComponentStyled>
+    <>
+      <MenuButtonsWrapper>
+        <div onClick={download} className="download_button">
+          Download
+        </div>
+      </MenuButtonsWrapper>
+      <TableComponentStyled>
         <tr>
           <th>Hotel Name</th>
           <th>Scan Date</th>
@@ -61,14 +102,15 @@ const TableComponent = () => {
           <th>Brand Price</th>
           <th>Ota Price</th>
         </tr>
-      {
-        bmls && bmls.length ? (
-          bmls.map((bml) => (
-            <TableItemComponent key={bml._id} bml={bml}/>
-          ))
-        ) : null
-      }
-    </TableComponentStyled>
+        {
+          bmls && bmls.length ? (
+            bmls.map((bml) => (
+              <TableItemComponent key={bml._id} bml={bml}/>
+            ))
+          ) : null
+        }
+      </TableComponentStyled>
+    </>
   );
 };
 
