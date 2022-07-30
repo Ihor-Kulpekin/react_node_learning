@@ -63,21 +63,33 @@ const TableComponent = () => {
     }))
   };
 
+  const getStatus = async () => {
+    const status = await axios.get('http://localhost:3002/api/v1/bmls/status');
+
+    if (status.data && status.data.downloadLink) {
+      const url = window.URL.createObjectURL(new Blob([new Uint8Array(status.data.downloadLink.buffer.data)], { type: 'application/zip' }));
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', status.data.downloadLink.file);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      setTimeout(async()=>{
+        await getStatus();
+      }, 1000)
+    }
+  }
+
   const download = async () => {
-    const response = await axios.post('http://localhost:3002/api/v1/bmls/download', {}, {
+    await axios.post('http://localhost:3002/api/v1/bmls/download', {}, {
       headers: {
         Accept: 'application/zip',
       }
     });
 
-    const url = window.URL.createObjectURL(new Blob([new Uint8Array(response.data.content.data)], { type: 'application/zip' }));
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', response.data.file);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    await getStatus();
   }
 
   useEffect(fetchBmls, [page])
