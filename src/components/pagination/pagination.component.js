@@ -92,13 +92,13 @@ const PaginationComponent = ({totalCount , rows , changePage, page }) => {
       >
         <div className="arrow left" />
       </li>
-      {paginationRange.map(pageNumber => {
+      {paginationRange.map((pageNumber, index) => {
         if (pageNumber === DOTS) {
-          return <li key={pageNumber} className="pagination-item dots">&#8230;</li>;
+          return <li key={index} className="pagination-item dots">&#8230;</li>;
         }
         return (
           <li
-            key={pageNumber}
+            key={index}
             className={`pagination-item ${pageNumber === page ? 'selected' : ''}`}
             onClick={() => changePage(pageNumber)}
           >

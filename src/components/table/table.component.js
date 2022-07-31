@@ -4,6 +4,7 @@ import TableItemComponent from "./table-item/table-item.component";
 import {useDispatch, useSelector} from "react-redux";
 import {getBmls} from "../../slices/bmls.silce";
 import axios from "axios";
+import moment from "moment";
 
 const TableComponentStyled = styled.table`
   font-family: Arial, Helvetica, sans-serif;
@@ -47,7 +48,7 @@ const MenuButtonsWrapper = styled.div`
   }
 `
 
-const TableComponent = () => {
+const TableComponent = ({download}) => {
   const {bmls, page} = useSelector((state) => state.bmls);
   const dispatch = useDispatch();
 
@@ -62,35 +63,6 @@ const TableComponent = () => {
       skip: rows * (page - 1)
     }))
   };
-
-  const getStatus = async () => {
-    const status = await axios.get('http://localhost:3002/api/v1/bmls/status');
-
-    if (status.data && status.data.downloadLink) {
-      const url = window.URL.createObjectURL(new Blob([new Uint8Array(status.data.downloadLink.buffer.data)], { type: 'application/zip' }));
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', status.data.downloadLink.file);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      setTimeout(async()=>{
-        await getStatus();
-      }, 1000)
-    }
-  }
-
-  const download = async () => {
-    await axios.post('http://localhost:3002/api/v1/bmls/download', {}, {
-      headers: {
-        Accept: 'application/zip',
-      }
-    });
-
-    await getStatus();
-  }
 
   useEffect(fetchBmls, [page])
 
